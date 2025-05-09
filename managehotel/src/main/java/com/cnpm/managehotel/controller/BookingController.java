@@ -1,8 +1,10 @@
 package com.cnpm.managehotel.controller;
 
 import com.cnpm.managehotel.dto.request.BookingRequest;
+import com.cnpm.managehotel.dto.request.CheckinRequest;
 import com.cnpm.managehotel.dto.response.ApiResponse;
 import com.cnpm.managehotel.dto.response.BookingResponse;
+import com.cnpm.managehotel.dto.response.CheckinResponse;
 import com.cnpm.managehotel.exception.AppException;
 import com.cnpm.managehotel.exception.ErrorCode;
 import com.cnpm.managehotel.service.BookingService;
@@ -51,6 +53,19 @@ public class BookingController {
         bookingService.delete(ids);
 
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @Operation(
+            summary = "Check-in using identity number",
+            description = "Allows a guest to check in if there is a valid booking and the room is available"
+    )
+    @PostMapping("/checkin")
+    public ApiResponse<CheckinResponse> checkIn(@RequestBody CheckinRequest request) {
+        CheckinResponse response = bookingService.checkIn(request);
+
+        return ApiResponse.<CheckinResponse>builder()
+                .result(response)
                 .build();
     }
 }

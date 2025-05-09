@@ -23,8 +23,9 @@ public enum ErrorCode {
     BOOKING_NOT_FOUND(3001, "Booking does not exist", HttpStatus.BAD_REQUEST),
     FEEDBACK_NOT_FOUND(4001, "Feedback does not exist", HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_FOUND(5001, "Product does not exist", HttpStatus.BAD_REQUEST),
-    NOT_ENOUGH(3002, "Amount of product not enoung in stock", HttpStatus.BAD_REQUEST),
-    CATEGORY_NOT_FOUND(6001, "Category does not exist", HttpStatus.BAD_REQUEST)
+    NOT_ENOUGH(5002, "Amount of product not enough in stock", HttpStatus.BAD_REQUEST),
+    CATEGORY_NOT_FOUND(6001, "Category does not exist", HttpStatus.BAD_REQUEST),
+    SERVICE_NOT_FOUND(7001, "Service does not exist", HttpStatus.BAD_REQUEST)
     ;
 
     private final int code;
