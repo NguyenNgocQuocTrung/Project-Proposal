@@ -30,6 +30,9 @@ public class Booking {
     @Column(name = "guest_num")
     int guestNum;
 
+    @Column(name = "is_paid")
+    Boolean isPaid = false;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
