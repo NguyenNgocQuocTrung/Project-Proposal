@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 public interface BookingMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "userId", target = "user.id")
     @Mapping(target = "bookingDetails", ignore = true)
     @Mapping(target = "services", ignore = true)
     Booking toEntity(BookingRequest request);

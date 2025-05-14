@@ -11,7 +11,12 @@ import java.util.Date;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingRequest {
-    long userId;
+    String fullName;
+    String phoneNumber;
+    String identityNumber;
+    String address;
+    String gender;
+    String nationality;
     int guestNum;
     Date checkIn;
     Date checkOut;
