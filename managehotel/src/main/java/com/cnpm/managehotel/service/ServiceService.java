@@ -5,4 +5,5 @@ import com.cnpm.managehotel.dto.response.ServiceResponse;
 
 public interface ServiceService {
     ServiceResponse save(ServiceRequest request);
+    void delete(Long[] id);
 }

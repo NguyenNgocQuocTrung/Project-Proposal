@@ -1,24 +1,24 @@
-package com.cnpm.managehotel.dto.request;
+package com.cnpm.managehotel.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Date;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BookingRequest {
+public class UserDTO extends AbstractDTO<UserDTO>{
+    Long id;
     String fullName;
+    String email;
+    String password;
     String phoneNumber;
-    String identityNumber;
     String address;
+    String identityNumber;
     String gender;
     String nationality;
-    int guestNum;
-    Date checkIn;
-    Date checkOut;
-    int[] roomNo;
 }

@@ -62,4 +62,22 @@ public class ServiceServiceImpl implements ServiceService {
         ServiceEntity savedService = serviceRepo.save(service);
         return serviceMapper.toDTO(savedService);
     }
+
+    @Override
+    public void delete(Long[] ids) {
+        for (Long id : ids) {
+            ServiceEntity service = serviceRepo.findById(id)
+                    .orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+
+            Product product = service.getProduct();
+            if (product.getCategory().getId() == 1) {
+                product.setAmount(product.getAmount() + service.getAmount());
+                ProductDTO productDto = productMapper.toDTO(product);
+                productService.save(productDto);
+            }
+
+            serviceRepo.deleteById(id);
+        }
+    }
+
 }

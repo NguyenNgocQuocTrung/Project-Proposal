@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface BookingRepo extends JpaRepository<Booking, Long> {
@@ -18,4 +19,8 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
       AND CURRENT_TIMESTAMP BETWEEN b.checkIn AND b.checkOut
     """)
     Optional<Booking> findByRoomNo(@Param("roomNo") int roomNo);
+
+    List<Booking> findByUserId(Long id);
+
+    List<Booking> findByUserIdAndIsPaidFalse(Long id);
 }

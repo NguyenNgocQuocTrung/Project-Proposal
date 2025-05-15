@@ -42,4 +42,16 @@ public class ServiceController {
                 .result(response)
                 .build();
     }
+
+    @DeleteMapping
+    @Operation(
+            summary = "Cancel a service",
+            description = "Deletes a booked service. If the service is a consumable item (category = 1), the product quantity will be restored to inventory."
+    )
+    public ApiResponse<Void> createService(@RequestBody Long[] ids){
+
+       serviceService.delete(ids);
+       return ApiResponse.<Void>builder()
+                .build();
+    }
 }

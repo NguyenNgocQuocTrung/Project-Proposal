@@ -28,13 +28,26 @@ public class RoomController {
                 .build();
     }
 
+    @GetMapping("/available")
+    @Operation(
+            summary = "Get all available rooms",
+            description = "Retrieves a list of all rooms that are currently available for booking."
+    )
+    public ApiResponse<RoomDTO> getAllRoomAvailable() {
+        RoomDTO availableRooms = roomService.findAllAvailable();
+
+        return ApiResponse.<RoomDTO>builder()
+                .result(availableRooms)
+                .build();
+    }
+
     @GetMapping
     @Operation(
             summary = "Get all rooms",
             description = "Retrieves a list of all available rooms."
     )
     public ApiResponse<RoomDTO> getAllRoom(){
-        RoomDTO response = roomService.findALL();
+        RoomDTO response = roomService.findAll();
 
         return ApiResponse.<RoomDTO>builder()
                 .result(response)

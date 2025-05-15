@@ -28,7 +28,7 @@ public class User {
     String address;
 
     @Column(name = "identity_number")
-    String identiyNumber;
+    String identityNumber;
 
     String gender;
     String nationality;

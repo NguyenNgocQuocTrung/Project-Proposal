@@ -1,5 +1,6 @@
 package com.cnpm.managehotel.service.impl;
 
+import com.cnpm.managehotel.constant.RoomStatus;
 import com.cnpm.managehotel.dto.RoomDTO;
 import com.cnpm.managehotel.entity.Room;
 import com.cnpm.managehotel.exception.AppException;
@@ -24,8 +25,19 @@ public class RoomServiceImpl implements RoomService {
     RoomMapper roomMapper;
 
     @Override
-    public RoomDTO findALL() {
+    public RoomDTO findAll() {
         List<Room> rooms = roomRepo.findAll();
+
+        List<RoomDTO> roomDTOs = roomMapper.toListDTO(rooms);
+
+        RoomDTO result = new RoomDTO();
+        result.setListResult(roomDTOs);
+        return result;
+    }
+
+    @Override
+    public RoomDTO findAllAvailable() {
+        List<Room> rooms = roomRepo.findByStatus(RoomStatus.AVAILABLE);
 
         List<RoomDTO> roomDTOs = roomMapper.toListDTO(rooms);
 
