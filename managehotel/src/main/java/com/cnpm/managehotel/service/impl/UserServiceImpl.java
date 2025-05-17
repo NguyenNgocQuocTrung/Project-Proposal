@@ -26,6 +26,10 @@ public class UserServiceImpl implements UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
+        if(dto.getIdentityNumber() != null && !dto.getIdentityNumber().isEmpty() && userRepo.existsByIdentityNumber(dto.getIdentityNumber())){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
         if (dto.getId() != null) {
             user = userRepo.findById(dto.getId())
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));

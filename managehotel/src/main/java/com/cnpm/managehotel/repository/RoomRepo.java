@@ -18,15 +18,22 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
     @Query("SELECT bd.room FROM BookingDetail bd WHERE bd.booking.bookingCode = :bookingCode")
     List<Room> findRoomsByBookingCode(@Param("bookingCode") String bookingCode);
 
-    @Query(value = """
-    SELECT * FROM room
-    WHERE status != 'MAINTAIN'
-      AND id NOT IN (
-          SELECT bd.room_id
-          FROM booking_detail bd
-          JOIN booking b ON b.id = bd.booking_id
-          WHERE :checkInDate < b.check_out
+    @Query("""
+    SELECT r FROM Room r
+    WHERE r.status != 'MAINTAIN'
+      AND r.id NOT IN (
+          SELECT bd.room.id
+          FROM BookingDetail bd
+          JOIN bd.booking b
+          WHERE b.checkOut > :checkInDate AND b.checkIn < :checkOutDate
       )
-    """, nativeQuery = true)
-    List<Room> findAvailableRoomsAt(@Param("checkInDate") Date checkInDate);
+""")
+    List<Room> findAvailableRoomsBetween(
+            @Param("checkInDate") Date checkInDate,
+            @Param("checkOutDate") Date checkOutDate);
+
+    @Query("SELECT COUNT(r) FROM Room r")
+    int countTotalRooms();
+
+    int countByStatus(String status);
 }

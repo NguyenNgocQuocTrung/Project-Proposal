@@ -78,7 +78,11 @@ public class VnPayServiceImpl implements VnPayService {
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
         booking.setIsPaid(true);
 
+        Invoice invoice = invoiceRepo.findByBookingId(booking.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.INVOICE_NOT_FOUND));
+
         List<Room> rooms = roomRepo.findRoomsByBookingCode(bookingCode);
+
 
         bookingRepo.save(booking);
 

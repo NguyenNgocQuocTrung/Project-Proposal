@@ -8,6 +8,7 @@ import com.cnpm.managehotel.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +39,11 @@ public class RoomController {
             summary = "Get all available rooms",
             description = "Retrieves a list of all rooms that are currently available for booking."
     )
-    public ApiResponse<RoomDTO> getAllRoomAvailable(@RequestParam Date checkinDate) {
-        RoomDTO availableRooms = roomService.findAllAvailable(checkinDate);
+    public ApiResponse<RoomDTO> getAllRoomAvailable(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                        Date checkinDate,
+                                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                        Date checkoutDate) {
+        RoomDTO availableRooms = roomService.findAllAvailable(checkinDate, checkoutDate);
 
         return ApiResponse.<RoomDTO>builder()
                 .result(availableRooms)
