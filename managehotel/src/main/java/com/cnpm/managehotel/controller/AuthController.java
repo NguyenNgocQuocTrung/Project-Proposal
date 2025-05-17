@@ -1,15 +1,22 @@
 package com.cnpm.managehotel.controller;
 
 import com.cnpm.managehotel.dto.UserDTO;
+import com.cnpm.managehotel.dto.request.AuthenticationRequest;
+import com.cnpm.managehotel.dto.request.IntrospectRequest;
 import com.cnpm.managehotel.dto.response.ApiResponse;
+import com.cnpm.managehotel.dto.response.AuthenticationResponse;
+import com.cnpm.managehotel.dto.response.IntrospectResponse;
 import com.cnpm.managehotel.exception.AppException;
 import com.cnpm.managehotel.exception.ErrorCode;
 import com.cnpm.managehotel.service.AuthService;
+import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/auth")
@@ -44,4 +51,30 @@ public class AuthController {
         return ApiResponse.<Void>builder()
                 .build();
     }
+
+    @PostMapping("/login")
+    @Operation(
+            summary = "User login",
+            description = "Authenticate user credentials and return authentication token"
+    )
+    public ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
+        AuthenticationResponse response = authService.authenticate(request);
+
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(response)
+                .build();
+    }
+
+//    @PostMapping("/introspect")
+//    @Operation(
+//            summary = "Token introspection",
+//            description = "Validate and retrieve details about an access token"
+//    )
+//    public ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request)
+//            throws ParseException, JOSEException {
+//        IntrospectResponse response = authService.introspect(request);
+//        return ApiResponse.<IntrospectResponse>builder()
+//                .result(response)
+//                .build();
+//    }
 }

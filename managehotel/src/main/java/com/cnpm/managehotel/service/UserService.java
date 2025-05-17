@@ -4,4 +4,5 @@ import com.cnpm.managehotel.dto.UserDTO;
 
 public interface UserService {
     UserDTO save(UserDTO request);
+    UserDTO findOne(String email);
 }

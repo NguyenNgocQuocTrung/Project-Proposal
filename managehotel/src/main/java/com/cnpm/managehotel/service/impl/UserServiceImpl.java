@@ -1,5 +1,6 @@
 package com.cnpm.managehotel.service.impl;
 
+import com.cnpm.managehotel.constant.UserRole;
 import com.cnpm.managehotel.dto.UserDTO;
 import com.cnpm.managehotel.entity.User;
 import com.cnpm.managehotel.exception.AppException;
@@ -22,8 +23,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO save(UserDTO dto) {
         User user;
 
-        if(userRepo.existsByEmail(dto.getEmail()) && dto.getEmail() != null && !dto.getEmail().isEmpty()){
-            throw new AppException(ErrorCode.USER_EXISTED);
+        if (dto.getEmail() != null && !dto.getEmail().isEmpty()) {
+            if (userRepo.existsByEmail(dto.getEmail())) {
+                throw new AppException(ErrorCode.USER_EXISTED);
+            }
         }
 
         if(dto.getIdentityNumber() != null && !dto.getIdentityNumber().isEmpty() && userRepo.existsByIdentityNumber(dto.getIdentityNumber())){
@@ -36,11 +39,21 @@ public class UserServiceImpl implements UserService {
             userMapper.updateUser(dto, user);
         } else {
             user = userMapper.toEntity(dto);
+            user.setRole(UserRole.CUSTOMER);
         }
 
         User saved = userRepo.save(user);
-
         return userMapper.toDTO(saved);
+    }
+
+    @Override
+    public UserDTO findOne(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        UserDTO userDto = userMapper.toDTO(user);
+
+        return userDto;
     }
 
 }
