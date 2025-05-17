@@ -14,6 +14,6 @@ public interface BookingMapper {
     @Mapping(target = "services", ignore = true)
     Booking toEntity(BookingRequest request);
 
-    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.fullName", target = "fullName")
     BookingResponse toDto(Booking booking);
 }

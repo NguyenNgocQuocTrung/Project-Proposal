@@ -9,15 +9,15 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface FeedbackMapper {
 
-    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.phoneNumber", target = "phoneNumber")
     @Mapping(source = "id", target = "id")
     FeedbackDTO toDto(Feedback feedback);
 
-    @Mapping(source = "userId", target = "user.id")
+    @Mapping(source = "phoneNumber", target = "user.phoneNumber")
     @Mapping(source = "id", target = "id")
     Feedback toEntity(FeedbackDTO feedbackDto);
 
-    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "user.phoneNumber", target = "phoneNumber")
     @Mapping(source = "id", target = "id")
     List<FeedbackDTO> toListDTO(List<Feedback> entities);
 

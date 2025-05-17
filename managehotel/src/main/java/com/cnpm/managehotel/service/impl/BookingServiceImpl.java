@@ -5,6 +5,7 @@ import com.cnpm.managehotel.dto.BookingdetailDTO;
 import com.cnpm.managehotel.dto.RoomDTO;
 import com.cnpm.managehotel.dto.UserDTO;
 import com.cnpm.managehotel.dto.request.BookingRequest;
+import com.cnpm.managehotel.dto.request.CheckinRequest;
 import com.cnpm.managehotel.dto.request.IdentityRequest;
 import com.cnpm.managehotel.dto.response.BookingResponse;
 import com.cnpm.managehotel.dto.response.CheckinResponse;
@@ -15,6 +16,7 @@ import com.cnpm.managehotel.entity.User;
 import com.cnpm.managehotel.exception.AppException;
 import com.cnpm.managehotel.exception.ErrorCode;
 import com.cnpm.managehotel.mapper.BookingMapper;
+import com.cnpm.managehotel.mapper.BookingdetailMapper;
 import com.cnpm.managehotel.mapper.RoomMapper;
 import com.cnpm.managehotel.mapper.UserMapper;
 import com.cnpm.managehotel.repository.BookingRepo;
@@ -29,9 +31,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,10 +48,33 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
     private final RoomMapper roomMapper;
     private final UserMapper userMapper;
+    private final BookingdetailMapper bookingdetailMapper;
 
     private final BookingdetailService bookingdetailService;
     private final RoomService roomService;
     private final UserService userService;
+
+    @Override
+    public BookingResponse findAll() {
+        YearMonth currentMonth = YearMonth.now();
+        LocalDate startOfMonth = currentMonth.atDay(1);
+        LocalDate endOfMonth = currentMonth.atEndOfMonth();
+        List<Booking> bookingEntities =bookingRepo.findAllByCheckInBetween(
+                Date.from(startOfMonth.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                Date.from(endOfMonth.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant())
+        );
+
+        List<BookingResponse> listResult = new ArrayList<>();
+        for(Booking bookingEntity : bookingEntities){
+            BookingResponse bookingResponse = bookingMapper.toDto(bookingEntity);
+            listResult.add(bookingResponse);
+        }
+
+        BookingResponse response = new BookingResponse();
+        response.setListResult(listResult);
+
+        return response;
+    }
 
     @Override
     @Transactional
@@ -103,8 +126,8 @@ public class BookingServiceImpl implements BookingService {
             BookingdetailDTO dto = new BookingdetailDTO();
             dto.setRoomId(room.getId());
             dto.setUnit(unit);
+            dto.setPrice(room.getPrice());
             dto.setBookingId(savedBooking.getId());
-            dto.setStatus(RoomStatus.BOOKED);
             bookingdetailService.save(dto);
         });
 
@@ -113,11 +136,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public void delete(Long[] ids) {
-        List<Long> idList = Arrays.asList(ids);
-        List<Booking> bookings = bookingRepo.findAllById(idList);
+    public void delete(String[] bookingCodes) {
+        List<String> bookingCodesList = Arrays.asList(bookingCodes);
+        List<Booking> bookings = bookingRepo.findAllByBookingCodeIn(bookingCodesList);
 
-        if (bookings.size() != idList.size()) {
+        if (bookings.size() != bookingCodesList .size()) {
             throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
         }
 
@@ -128,42 +151,39 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public CheckinResponse checkIn(IdentityRequest request) {
-        User user = userRepo.findByIdentityNumber(request.getIdentityNumber())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    public CheckinResponse checkIn(CheckinRequest request) {
 
-        List<Booking> bookings = bookingRepo.findByUserId(user.getId());
-
-        Booking bookingToday = bookings.stream()
-                .filter(b -> LocalDate.now().equals(
-                        b.getCheckIn().toInstant()
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                ))
-                .findFirst()
+        Booking booking = bookingRepo.findByBookingCode(request.getBookingCode())
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
 
-        List<BookingDetail> details = bookingdetailRepo.findByBookingId(bookingToday.getId());
+        Room room = roomRepo.findByRoomNo(request.getRoomNo())
+                .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
 
-        List<RoomDTO> rooms = new ArrayList<>();
+        BookingDetail detail = bookingdetailRepo.findByBookingIdAndRoomId(booking.getId(), room.getId());
 
-        for (BookingDetail detail : details) {
-            Room roomEntity = detail.getRoom();
-            if (!RoomStatus.BOOKED.equalsIgnoreCase(roomEntity.getStatus())) {
-                throw new AppException(ErrorCode.ROOM_IN_USE);
-            }
-            roomEntity.setStatus(RoomStatus.OCCUPIED);
-
-            RoomDTO roomDto = roomMapper.toDTO(roomEntity);
-            roomDto = roomService.save(roomDto);
-
-            rooms.add(roomDto);
+        if(!request.isForeign()){
+            detail.setForeign(true);
         }
 
+        if(!request.isExtraFree()){
+            detail.setExtraFee(0.25);
+        }
+
+        BookingdetailDTO detailDto = bookingdetailMapper.toDTO(detail);
+        bookingdetailService.save(detailDto);
+
+        if (!RoomStatus.AVAILABLE.equalsIgnoreCase(room.getStatus())) {
+            throw new AppException(ErrorCode.ROOM_IN_USE);
+        }
+        room.setStatus(RoomStatus.OCCUPIED);
+
+        RoomDTO roomDto = roomMapper.toDTO(room);
+        roomDto = roomService.save(roomDto);
+
         CheckinResponse response = new CheckinResponse();
-        response.setBookingId(bookingToday.getId());
-        response.setCustomerName(user.getFullName());
-        response.setRooms(rooms);
+        response.setBookingCode(booking.getBookingCode());
+        response.setCustomerName(booking.getUser().getFullName());
+        response.setRoom(roomDto);
         response.setCheckInTime(LocalDateTime.now());
         return response;
     }
@@ -189,15 +209,17 @@ public class BookingServiceImpl implements BookingService {
 
     private boolean areRoomsAvailable(List<Room> rooms, Date checkIn, Date checkOut) {
         for (Room room : rooms) {
-            if (!RoomStatus.AVAILABLE.equalsIgnoreCase(room.getStatus())) {
+
+            if (RoomStatus.MAINTAIN.equalsIgnoreCase(room.getStatus())) {
                 return false;
             }
 
             for (BookingDetail detail : room.getBookingDetails()) {
                 Booking booking = detail.getBooking();
-                if (booking == null) continue;
+                if (booking == null)
+                    continue;
 
-                boolean overlaps = !(booking.getCheckOut().before(checkIn) || booking.getCheckIn().after(checkOut));
+                boolean overlaps = booking.getCheckOut().after(checkIn) && booking.getCheckIn().before(checkOut);
                 if (overlaps) {
                     return false;
                 }

@@ -42,8 +42,6 @@ public class BookingdetailServiceImpl implements BookingdetailService {
 
         Room room = roomRepo.findById(request.getRoomId())
                 .orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
-        RoomDTO roomDto = roomMapper.toDTO(room);
-        roomDto.setStatus(request.getStatus());
 
         BookingDetail entity;
 
@@ -59,8 +57,6 @@ public class BookingdetailServiceImpl implements BookingdetailService {
         entity.setRoom(room);
 
         BookingDetail saved = bookingDetailRepo.save(entity);
-
-        roomService.save(roomDto);
 
         return bookingDetailMapper.toDTO(saved);
     }

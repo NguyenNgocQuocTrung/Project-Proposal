@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 @Entity
@@ -20,6 +21,9 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
+    @Column(name = "booking_code", unique = true, nullable = false)
+    String bookingCode;
 
     @Column(name = "check_in")
     Date checkIn;
@@ -42,5 +46,12 @@ public class Booking {
 
     @OneToMany(mappedBy = "booking")
     List<ServiceEntity> services = new ArrayList<>();
+
+    @PrePersist
+    private void generateBookingCode() {
+        if (this.bookingCode == null || this.bookingCode.isEmpty()) {
+            this.bookingCode = "BK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        }
+    }
 
 }

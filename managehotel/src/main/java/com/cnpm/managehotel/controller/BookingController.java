@@ -1,6 +1,7 @@
 package com.cnpm.managehotel.controller;
 
 import com.cnpm.managehotel.dto.request.BookingRequest;
+import com.cnpm.managehotel.dto.request.CheckinRequest;
 import com.cnpm.managehotel.dto.request.IdentityRequest;
 import com.cnpm.managehotel.dto.response.ApiResponse;
 import com.cnpm.managehotel.dto.response.BookingResponse;
@@ -10,8 +11,8 @@ import com.cnpm.managehotel.exception.ErrorCode;
 import com.cnpm.managehotel.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,13 +24,15 @@ public class BookingController {
     private final BookingService bookingService;
 
     @ExceptionHandler(AppException.class)
-    public ApiResponse<Void> handleAppException(AppException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
         ErrorCode errorCode = ex.getErrorCode();
 
-        return ApiResponse.<Void>builder()
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatusCode());
     }
 
     @PostMapping
@@ -50,10 +53,23 @@ public class BookingController {
             summary = "Delete bookings",
             description = "Deletes one or more bookings by their IDs."
     )
-    public ApiResponse<Void> deteleBooking(@RequestBody Long[] ids){
-        bookingService.delete(ids);
+    public ApiResponse<Void> deteleBooking(@RequestBody String[] bookingCodes){
+        bookingService.delete(bookingCodes);
 
         return ApiResponse.<Void>builder()
+                .build();
+    }
+
+    @Operation(
+            summary = "Get all booking in this month",
+            description = "Allows employee can watch all booking in this month"
+    )
+    @GetMapping
+    public ApiResponse<BookingResponse> getAllInCurrentMonth(){
+        BookingResponse response = bookingService.findAll();
+
+        return ApiResponse.<BookingResponse>builder()
+                .result(response)
                 .build();
     }
 
@@ -62,7 +78,7 @@ public class BookingController {
             description = "Allows a guest to check in if there is a valid booking and the room is available"
     )
     @PostMapping("/checkin")
-    public ApiResponse<CheckinResponse> checkIn(@RequestBody IdentityRequest request) {
+    public ApiResponse<CheckinResponse> checkIn(@RequestBody CheckinRequest request) {
         CheckinResponse response = bookingService.checkIn(request);
 
         return ApiResponse.<CheckinResponse>builder()

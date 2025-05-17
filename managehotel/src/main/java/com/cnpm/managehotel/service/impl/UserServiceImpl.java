@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO save(UserDTO dto) {
         User user;
 
-        if(userRepo.existsByEmail(dto.getEmail())){
+        if(userRepo.existsByEmail(dto.getEmail()) && dto.getEmail() != null && !dto.getEmail().isEmpty()){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 

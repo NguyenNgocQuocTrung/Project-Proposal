@@ -8,7 +8,10 @@ import com.cnpm.managehotel.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("/room")
@@ -19,13 +22,15 @@ public class RoomController {
     private final RoomService roomService;
 
     @ExceptionHandler(AppException.class)
-    public ApiResponse<Void> handleAppException(AppException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
         ErrorCode errorCode = ex.getErrorCode();
 
-        return ApiResponse.<Void>builder()
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatusCode());
     }
 
     @GetMapping("/available")
@@ -33,8 +38,8 @@ public class RoomController {
             summary = "Get all available rooms",
             description = "Retrieves a list of all rooms that are currently available for booking."
     )
-    public ApiResponse<RoomDTO> getAllRoomAvailable() {
-        RoomDTO availableRooms = roomService.findAllAvailable();
+    public ApiResponse<RoomDTO> getAllRoomAvailable(@RequestParam Date checkinDate) {
+        RoomDTO availableRooms = roomService.findAllAvailable(checkinDate);
 
         return ApiResponse.<RoomDTO>builder()
                 .result(availableRooms)

@@ -13,9 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CheckinResponse {
-    Long bookingId;
+    String bookingCode;
     String customerName;
     LocalDateTime checkInTime;
     String status;
-    List<RoomDTO> rooms;
+    RoomDTO room;
 }
