@@ -17,5 +17,5 @@ import java.util.Date;
 public class FeedbackDTO extends AbstractDTO<FeedbackDTO> {
     private String content;
     private Date submittedAt;
-    private Long userId;
+    private String phoneNumber;
 }

@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "invoice")
@@ -27,19 +27,13 @@ public class Invoice {
     @JoinColumn(name = "booking_id", nullable = false)
     Booking booking;
 
-    @Column(name = "room_amount", nullable = false)
-    double roomAmount;
-
-    @Column(name = "service_amount", nullable = false)
-    double serviceAmount;
-
     @Column(name = "total_amount", nullable = false)
     double totalAmount;
 
     @Column(name = "paid_at")
-    LocalDateTime paidAt;
+    Date paidAt;
 
     @Column(name = "created_at")
     @CreatedDate
-    LocalDateTime createdAt;
+    Date createdAt;
 }

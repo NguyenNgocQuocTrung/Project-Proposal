@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,8 +37,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomDTO findAllAvailable() {
-        List<Room> rooms = roomRepo.findByStatus(RoomStatus.AVAILABLE);
+    public RoomDTO findAllAvailable(Date checkinDate) {
+        List<Room> rooms = roomRepo.findAvailableRoomsAt(checkinDate);
 
         List<RoomDTO> roomDTOs = roomMapper.toListDTO(rooms);
 

@@ -25,7 +25,9 @@ public enum ErrorCode {
     PRODUCT_NOT_FOUND(5001, "Product does not exist", HttpStatus.BAD_REQUEST),
     NOT_ENOUGH(5002, "Amount of product not enough in stock", HttpStatus.BAD_REQUEST),
     CATEGORY_NOT_FOUND(6001, "Category does not exist", HttpStatus.BAD_REQUEST),
-    SERVICE_NOT_FOUND(7001, "Service does not exist", HttpStatus.BAD_REQUEST)
+    SERVICE_NOT_FOUND(7001, "Service does not exist", HttpStatus.BAD_REQUEST),
+    INVOICE_NOT_FOUND(8001, "Invoice does not exist", HttpStatus.BAD_REQUEST),
+    TOTAL_NOT_EQUAL(8001, "Total price not equal", HttpStatus.BAD_REQUEST)
     ;
 
     private final int code;

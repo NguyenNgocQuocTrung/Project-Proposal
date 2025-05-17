@@ -15,7 +15,8 @@ import java.util.Date;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingResponse extends AbstractDTO<BookingResponse> {
-    long userId;
+    String bookingCode;
+    String fullName;
     int guestNum;
     Date checkIn;
     Date checkOut;

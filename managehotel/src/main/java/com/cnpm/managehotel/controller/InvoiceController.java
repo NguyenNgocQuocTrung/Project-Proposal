@@ -1,10 +1,10 @@
 package com.cnpm.managehotel.controller;
 
-import com.cnpm.managehotel.dto.UserDTO;
 import com.cnpm.managehotel.dto.response.ApiResponse;
+import com.cnpm.managehotel.dto.response.InvoiceResponse;
 import com.cnpm.managehotel.exception.AppException;
 import com.cnpm.managehotel.exception.ErrorCode;
-import com.cnpm.managehotel.service.AuthService;
+import com.cnpm.managehotel.service.InvoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/payment")
 @RequiredArgsConstructor
-@Tag(name = "Authentication API", description = "APIs for authentication")
-public class AuthController {
+@Tag(name = "Payment API", description = "APIs for payment")
+public class InvoiceController {
 
-    private final AuthService authService;
+    private final InvoiceService paymentService;
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
@@ -31,17 +31,15 @@ public class AuthController {
         return new ResponseEntity<>(response, errorCode.getStatusCode());
     }
 
-    @PostMapping("/register")
+    @GetMapping("/{bookingCode}/invoice-preview")
     @Operation(
-            summary = "Register a new user",
-            description = "Creates a new user account with the provided information. Email and password are required. " +
-                    "The password will be securely encrypted before saving. Duplicate usernames or emails are not allowed."
+            summary = "Preview payment",
+            description = "Return detail invoice"
     )
-    public ApiResponse<Void> register(@RequestBody UserDTO request){
-
-        authService.register(request);
-
-        return ApiResponse.<Void>builder()
+    public ApiResponse<InvoiceResponse> previewInvoice(@PathVariable String bookingCode) {
+        InvoiceResponse response = paymentService.preview(bookingCode);
+        return ApiResponse.<InvoiceResponse>builder()
+                .result(response)
                 .build();
     }
 }

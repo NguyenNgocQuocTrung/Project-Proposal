@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,13 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
     """)
     Optional<Booking> findByRoomNo(@Param("roomNo") int roomNo);
 
+    Optional<Booking> findByBookingCode(String bookingCode);
+
     List<Booking> findByUserId(Long id);
 
+    List<Booking> findAllByCheckInBetween(Date startDate, Date endDate);
+
     List<Booking> findByUserIdAndIsPaidFalse(Long id);
+
+    List<Booking> findAllByBookingCodeIn(List<String> bookingCodes);
 }

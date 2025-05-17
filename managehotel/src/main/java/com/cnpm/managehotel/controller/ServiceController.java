@@ -9,6 +9,7 @@ import com.cnpm.managehotel.service.ServiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,13 +21,15 @@ public class ServiceController {
     private final ServiceService serviceService;
 
     @ExceptionHandler(AppException.class)
-    public ApiResponse<Void> handleAppException(AppException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
         ErrorCode errorCode = ex.getErrorCode();
 
-        return ApiResponse.<Void>builder()
+        ApiResponse<Void> response = ApiResponse.<Void>builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
+
+        return new ResponseEntity<>(response, errorCode.getStatusCode());
     }
 
     @PostMapping

@@ -38,8 +38,8 @@ public class FeedbackServiceImpl implements FeedbackService{
             feedback = feedbackMapper.toEntity(request);
         }
 
-        if (request.getUserId() != null) {
-            User user = userRepo.findById(request.getUserId())
+        if (request.getPhoneNumber() != null) {
+            User user = userRepo.findByPhoneNumber(request.getPhoneNumber())
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
             feedback.setUser(user);
         }
