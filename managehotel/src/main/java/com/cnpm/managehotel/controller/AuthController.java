@@ -3,6 +3,7 @@ package com.cnpm.managehotel.controller;
 import com.cnpm.managehotel.dto.UserDTO;
 import com.cnpm.managehotel.dto.request.AuthenticationRequest;
 import com.cnpm.managehotel.dto.request.IntrospectRequest;
+import com.cnpm.managehotel.dto.request.LogoutRequest;
 import com.cnpm.managehotel.dto.response.ApiResponse;
 import com.cnpm.managehotel.dto.response.AuthenticationResponse;
 import com.cnpm.managehotel.dto.response.IntrospectResponse;
@@ -63,6 +64,16 @@ public class AuthController {
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(response)
                 .build();
+    }
+
+    @PostMapping("/logout")
+    @Operation(
+            summary = "User logout",
+            description = "Logs out a user by invalidating their refresh token or session."
+    )
+    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authService.logout(request);
+        return ApiResponse.<Void>builder().build();
     }
 
 //    @PostMapping("/introspect")

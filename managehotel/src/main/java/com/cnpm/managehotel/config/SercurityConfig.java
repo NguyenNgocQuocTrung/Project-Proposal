@@ -2,6 +2,7 @@ package com.cnpm.managehotel.config;
 
 import com.cnpm.managehotel.constant.UserRole;
 import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,9 @@ public class SercurityConfig {
     @Value("${jwt.signerKey}")
     @NonFinal
     String signerKey;
+
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
 
     private static final String[] RECEPTIONIST_GET_ENDPOINTS = {
             "/room/available",
@@ -91,15 +95,15 @@ public class SercurityConfig {
                         .requestMatchers(HttpMethod.GET, COMMON_GET_ENDPOINTS).hasAnyRole(UserRole.ADMIN, UserRole.RECEPTIONIST)
                         .requestMatchers(HttpMethod.POST, "/feedback").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/feedback").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/login").anonymous()
+                        .requestMatchers(HttpMethod.POST, "/auth/register").anonymous()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**").permitAll()
                         .anyRequest()
                         .authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
                 oauth2.jwt(jwtConfigurer ->
-                        jwtConfigurer.decoder(jwtDecoder())
+                        jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                 )
         );
@@ -109,14 +113,6 @@ public class SercurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean
-    JwtDecoder jwtDecoder(){
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-    }
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
