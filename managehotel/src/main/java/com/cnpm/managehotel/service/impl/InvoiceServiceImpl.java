@@ -56,8 +56,12 @@ public class InvoiceServiceImpl implements InvoiceService {
         for (BookingDetail detail : details) {
             Room room = detail.getRoom();
             double price = room.getPrice();
-            roomTotal += price * detail.getUnit();
-
+            double roomPrice = price * detail.getUnit();
+            if(detail.isForeign())
+                roomPrice = roomPrice * 1.5;
+            if(detail.getExtraFee() != 0)
+                roomPrice = roomPrice + roomPrice * detail.getExtraFee();
+            roomTotal += roomPrice;
             roomNos += room.getRoomNo()+ ", ";
         }
 
