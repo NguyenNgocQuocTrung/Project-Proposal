@@ -13,6 +13,7 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
 
     Optional<Room> findByRoomNo(int roomNo);
     List<Room> findByRoomNoIn(List<Integer> roomNo);
+    List<Room> findByStatus(String status);
 
     @Query("SELECT bd.room FROM BookingDetail bd WHERE bd.booking.bookingCode = :bookingCode")
     List<Room> findRoomsByBookingCode(@Param("bookingCode") String bookingCode);

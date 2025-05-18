@@ -84,14 +84,14 @@ public class SercurityConfig {
 
         httpSecurity
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, RECEPTIONIST_GET_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
-                        .requestMatchers(HttpMethod.POST, RECEPTIONIST_POST_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
-                        .requestMatchers(HttpMethod.DELETE, RECEPTIONIST_DELETE_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
-                        .requestMatchers(HttpMethod.GET, ADMIN_GET_ENDPOINTS).hasRole(UserRole.ADMIN)
-                        .requestMatchers(HttpMethod.POST, ADMIN_POST_ENDPOINTS).hasRole(UserRole.ADMIN)
-                        .requestMatchers(HttpMethod.PUT, ADMIN_PUT_ENDPOINTS).hasRole(UserRole.ADMIN)
-                        .requestMatchers(HttpMethod.DELETE, ADMIN_DELETE_ENDPOINTS).hasRole(UserRole.ADMIN)
-                        .requestMatchers(HttpMethod.GET, COMMON_GET_ENDPOINTS).hasAnyRole(UserRole.ADMIN, UserRole.RECEPTIONIST)
+//                        .requestMatchers(HttpMethod.GET, RECEPTIONIST_GET_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
+//                        .requestMatchers(HttpMethod.POST, RECEPTIONIST_POST_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
+//                        .requestMatchers(HttpMethod.DELETE, RECEPTIONIST_DELETE_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
+//                        .requestMatchers(HttpMethod.GET, ADMIN_GET_ENDPOINTS).hasRole(UserRole.ADMIN)
+//                        .requestMatchers(HttpMethod.POST, ADMIN_POST_ENDPOINTS).hasRole(UserRole.ADMIN)
+//                        .requestMatchers(HttpMethod.PUT, ADMIN_PUT_ENDPOINTS).hasRole(UserRole.ADMIN)
+//                        .requestMatchers(HttpMethod.DELETE, ADMIN_DELETE_ENDPOINTS).hasRole(UserRole.ADMIN)
+//                        .requestMatchers(HttpMethod.GET, COMMON_GET_ENDPOINTS).hasAnyRole(UserRole.ADMIN, UserRole.RECEPTIONIST)
                         .requestMatchers(HttpMethod.POST, "/feedback").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/feedback").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").anonymous()
