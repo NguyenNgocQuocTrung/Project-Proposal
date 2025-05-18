@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { mockRooms } from '@/lib/mockData';
+import { api } from '@/services/api';
 
 // Initial state
 const initialState = {
@@ -9,73 +9,77 @@ const initialState = {
   error: null,
 };
 
-// Load rooms from localStorage
-const loadRoomsFromStorage = () => {
-  try {
-    const storedRooms = localStorage.getItem('hotelRooms');
-    return storedRooms ? JSON.parse(storedRooms) : mockRooms;
-  } catch (error) {
-    console.error('Error loading rooms from localStorage:', error);
-    return mockRooms;
-  }
-};
-
-// Save rooms to localStorage
-const saveRoomsToStorage = (rooms) => {
-  try {
-    localStorage.setItem('hotelRooms', JSON.stringify(rooms));
-  } catch (error) {
-    console.error('Error saving rooms to localStorage:', error);
-  }
-};
-
 // Async thunks
 export const fetchRooms = createAsyncThunk(
   'rooms/fetchRooms',
   async (_, { rejectWithValue }) => {
     try {
-      // In a real application, this would be an API call
-      // For now, we'll load data from localStorage or use mock data
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const rooms = loadRoomsFromStorage();
-          resolve(rooms);
-        }, 500);
-      });
+      const response = await api.rooms.getAll();
+      console.log('API Response:', response);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      console.error('API Error:', error);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
 export const fetchRoomById = createAsyncThunk(
   'rooms/fetchRoomById',
-  async (roomId, { rejectWithValue, getState }) => {
+  async (roomId, { rejectWithValue }) => {
     try {
-      // In a real application, this would be an API call
-      // For now, we'll search in our local state first, and if not found, check localStorage
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          const { rooms } = getState().rooms;
-          
-          // First check if we have the room in our state
-          let room = rooms.find(r => r.id === roomId);
-          
-          // If not found in state, try to get it from localStorage
-          if (!room) {
-            const storedRooms = loadRoomsFromStorage();
-            room = storedRooms.find(r => r.id === roomId);
-          }
-          
-          if (room) {
-            resolve(room);
-          } else {
-            reject(new Error('Room not found'));
-          }
-        }, 300);
-      });
+      const response = await api.rooms.getById(roomId);
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const createRoom = createAsyncThunk(
+  'rooms/createRoom',
+  async (roomData, { rejectWithValue }) => {
+    try {
+      const response = await api.rooms.create(roomData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const updateRoom = createAsyncThunk(
+  'rooms/updateRoom',
+  async ({ id, roomData }, { rejectWithValue }) => {
+    try {
+      const response = await api.rooms.update(id, roomData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const deleteRoom = createAsyncThunk(
+  'rooms/deleteRoom',
+  async (roomId, { rejectWithValue }) => {
+    try {
+      await api.rooms.delete(roomId);
+      return roomId;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const fetchAvailableRooms = createAsyncThunk(
+  'rooms/fetchAvailableRooms',
+  async ({ checkInDate, checkOutDate }, { rejectWithValue }) => {
+    try {
+      const response = await api.rooms.getAvailable(checkInDate, checkOutDate);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -85,28 +89,6 @@ const roomsSlice = createSlice({
   name: 'rooms',
   initialState,
   reducers: {
-    addRoom: (state, action) => {
-      const newRoom = {
-        ...action.payload,
-        id: Date.now(), // Simple ID generation for demo
-      };
-      state.rooms.push(newRoom);
-      saveRoomsToStorage(state.rooms);
-    },
-    updateRoom: (state, action) => {
-      const index = state.rooms.findIndex(room => room.id === action.payload.id);
-      if (index !== -1) {
-        state.rooms[index] = action.payload;
-        saveRoomsToStorage(state.rooms);
-      }
-    },
-    deleteRoom: (state, action) => {
-      state.rooms = state.rooms.filter(room => room.id !== action.payload);
-      saveRoomsToStorage(state.rooms);
-      if (state.currentRoom && state.currentRoom.id === action.payload) {
-        state.currentRoom = null;
-      }
-    },
     clearRoomError: (state) => {
       state.error = null;
     },
@@ -138,10 +120,55 @@ const roomsSlice = createSlice({
       .addCase(fetchRoomById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch room';
+      })
+      // Create room cases
+      .addCase(createRoom.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createRoom.fulfilled, (state, action) => {
+        state.loading = false;
+        state.rooms.push(action.payload);
+      })
+      .addCase(createRoom.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to create room';
+      })
+      // Update room cases
+      .addCase(updateRoom.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateRoom.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.rooms.findIndex(room => room.id === action.payload.id);
+        if (index !== -1) {
+          state.rooms[index] = action.payload;
+        }
+      })
+      .addCase(updateRoom.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to update room';
+      })
+      // Delete room cases
+      .addCase(deleteRoom.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteRoom.fulfilled, (state, action) => {
+        state.loading = false;
+        state.rooms = state.rooms.filter(room => room.id !== action.payload);
+        if (state.currentRoom && state.currentRoom.id === action.payload) {
+          state.currentRoom = null;
+        }
+      })
+      .addCase(deleteRoom.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Failed to delete room';
       });
   },
 });
 
-export const { addRoom, updateRoom, deleteRoom, clearRoomError } = roomsSlice.actions;
+export const { clearRoomError } = roomsSlice.actions;
 
 export default roomsSlice.reducer;

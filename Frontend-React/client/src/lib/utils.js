@@ -18,13 +18,25 @@ export function formatCurrency(amount) {
 /**
  * Format a date string
  */
-export function formatDate(dateString) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
+export function formatDate(date) {
+  if (!date) return '';
+  
+  try {
+    // Đảm bảo date là một đối tượng Date hợp lệ
+    const dateObj = new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      return '';
+    }
+
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    }).format(dateObj);
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '';
+  }
 }
 
 /**
