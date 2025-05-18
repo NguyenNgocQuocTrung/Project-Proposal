@@ -10,10 +10,4 @@ import java.util.List;
 public interface BookingdetailRepo extends JpaRepository<BookingDetail, Long> {
     List<BookingDetail> findByBookingId(Long bookingId);
     BookingDetail findByBookingIdAndRoomId(Long bookingId, Long roomId);
-
-    @Query("""
-    SELECT bd FROM BookingDetail bd
-    WHERE bd.booking.bookingCode = :bookingCode
-    """)
-    List<BookingDetail> findAllByBookingCode(@Param("bookingCode") String bookingCode);
 }
