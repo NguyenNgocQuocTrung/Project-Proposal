@@ -30,4 +30,15 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
     List<Booking> findByUserIdAndIsPaidFalse(Long id);
 
     List<Booking> findAllByBookingCodeIn(List<String> bookingCodes);
+
+    @Query("SELECT COUNT(DISTINCT bd.room.id) FROM BookingDetail bd JOIN bd.booking b WHERE b.isPaid = true")
+    int countBookedRooms();
+
+    int countByCheckInAfter(Date date);
+
+    int countByCheckOutAfter(Date date);
+
+    @Query("SELECT SUM(b.guestNum) FROM Booking b WHERE b.checkIn <= CURRENT_DATE AND b.checkOut >= CURRENT_DATE")
+    Integer getTotalGuestsNow();
+
 }

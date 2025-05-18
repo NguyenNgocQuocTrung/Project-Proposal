@@ -7,9 +7,10 @@ import lombok.experimental.FieldDefaults;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
+@Data
 @Entity
 @Table(name = "user")
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -33,6 +34,7 @@ public class User {
     String gender;
     String nationality;
     String password;
+    String role;
 
     @OneToMany(mappedBy = "user")
     List<Booking> bookings = new ArrayList<>();

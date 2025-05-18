@@ -31,6 +31,9 @@ public class Room {
 
     String status;
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    String description;
+
     @OneToMany(mappedBy = "room")
     List<BookingDetail> bookingDetails = new ArrayList<>();
 

@@ -37,8 +37,20 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomDTO findAllAvailable(Date checkinDate) {
-        List<Room> rooms = roomRepo.findAvailableRoomsAt(checkinDate);
+    public RoomDTO findAllAvailable(Date checkinDate, Date checkoutDate) {
+        List<Room> rooms = roomRepo.findAvailableRoomsBetween(checkinDate, checkoutDate);
+
+        List<RoomDTO> roomDTOs = roomMapper.toListDTO(rooms);
+
+        RoomDTO result = new RoomDTO();
+        result.setListResult(roomDTOs);
+        return result;
+    }
+
+    @Override
+    public RoomDTO findAllRoomByBookingCode(String bookingCode) {
+
+        List<Room> rooms = roomRepo.findRoomsByBookingCode(bookingCode);
 
         List<RoomDTO> roomDTOs = roomMapper.toListDTO(rooms);
 

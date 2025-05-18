@@ -16,7 +16,10 @@ public class Product {
     Long id;
 
     String title;
+
+    @Column(name = "description", columnDefinition = "TEXT")
     String description;
+
     double price;
     int amount;
 
