@@ -20,14 +20,15 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
 
     @Query("""
     SELECT r FROM Room r
-    WHERE r.status != 'MAINTAIN'
-      AND r.id NOT IN (
-          SELECT bd.room.id
-          FROM BookingDetail bd
-          JOIN bd.booking b
-          WHERE b.checkOut > :checkInDate AND b.checkIn < :checkOutDate
-      )
-""")
+    r.status != 'MAINTAIN'
+    AND r.id NOT IN (
+       SELECT bd.room.id
+       FROM BookingDetail bd
+       JOIN bd.booking b
+       WHERE FUNCTION('date', b.checkOut) > FUNCTION('date', :checkInDate)
+       AND FUNCTION('date', b.checkIn) < FUNCTION('date', :checkOutDate)
+    )
+    """)
     List<Room> findAvailableRoomsBetween(
             @Param("checkInDate") Date checkInDate,
             @Param("checkOutDate") Date checkOutDate);
@@ -36,6 +37,4 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
     int countTotalRooms();
 
     int countByStatus(String status);
-
-
 }
