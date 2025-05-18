@@ -3,11 +3,13 @@ package com.cnpm.managehotel.service.impl;
 import com.cnpm.managehotel.constant.RoomStatus;
 import com.cnpm.managehotel.dto.BookingdetailDTO;
 import com.cnpm.managehotel.dto.RoomDTO;
+import com.cnpm.managehotel.dto.response.BookingResponse;
 import com.cnpm.managehotel.entity.Booking;
 import com.cnpm.managehotel.entity.BookingDetail;
 import com.cnpm.managehotel.entity.Room;
 import com.cnpm.managehotel.exception.AppException;
 import com.cnpm.managehotel.exception.ErrorCode;
+import com.cnpm.managehotel.mapper.BookingMapper;
 import com.cnpm.managehotel.mapper.BookingdetailMapper;
 import com.cnpm.managehotel.mapper.RoomMapper;
 import com.cnpm.managehotel.repository.BookingRepo;
@@ -34,6 +36,8 @@ public class BookingdetailServiceImpl implements BookingdetailService {
     private final RoomMapper roomMapper;
 
     private final BookingdetailMapper bookingDetailMapper;
+
+    private final BookingMapper bookingMapper;
 
     private final RoomService roomService;
 
@@ -80,22 +84,26 @@ public class BookingdetailServiceImpl implements BookingdetailService {
 
     public BookingdetailDTO findAllBookingdetailByBooking(String bookingCode){
 
-        List<BookingDetail> details = bookingDetailRepo.findAllByBookingCode(bookingCode);
+        Booking booking = bookingRepo.findByBookingCode(bookingCode)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        BookingResponse bookingResponse = bookingMapper.toDto(booking);
 
         List<BookingdetailDTO> listResult = new ArrayList<>();
 
-        for(BookingDetail detail : details){
+        for(BookingDetail detail : booking.getBookingDetails()){
 
             BookingdetailDTO detailDto = bookingDetailMapper.toDTO(detail);
 
             RoomDTO roomDto = roomMapper.toDTO(detail.getRoom());
 
-            detailDto.setRoomDTO(roomDto);
+            detailDto.setRoom(roomDto);
 
             listResult.add(detailDto);
         }
         BookingdetailDTO response = new BookingdetailDTO();
         response.setListResult(listResult);
+        response.setBooking(bookingResponse);
 
         return response;
     }
