@@ -63,6 +63,19 @@ public class RoomController {
                 .build();
     }
 
+    @GetMapping
+    @Operation(
+            summary = "Get all rooms occupied",
+            description = "Retrieves a list of all occupied rooms."
+    )
+    public ApiResponse<RoomDTO> getAllRoomOccupied(){
+        RoomDTO response = roomService.findAllOccupide();
+
+        return ApiResponse.<RoomDTO>builder()
+                .result(response)
+                .build();
+    }
+
     @PostMapping
     @Operation(
             summary = "Create new room",

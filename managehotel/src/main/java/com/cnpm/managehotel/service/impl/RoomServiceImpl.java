@@ -48,6 +48,17 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public RoomDTO findAllOccupide() {
+        List<Room> rooms = roomRepo.findByStatus(RoomStatus.OCCUPIED);
+
+        List<RoomDTO> roomDTOs = roomMapper.toListDTO(rooms);
+
+        RoomDTO result = new RoomDTO();
+        result.setListResult(roomDTOs);
+        return result;
+    }
+
+    @Override
     public RoomDTO save(RoomDTO request) {
         Room entity;
 
