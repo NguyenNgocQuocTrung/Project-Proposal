@@ -48,18 +48,6 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public RoomDTO findAllRoomByBookingCode(String bookingCode) {
-
-        List<Room> rooms = roomRepo.findRoomsByBookingCode(bookingCode);
-
-        List<RoomDTO> roomDTOs = roomMapper.toListDTO(rooms);
-
-        RoomDTO result = new RoomDTO();
-        result.setListResult(roomDTOs);
-        return result;
-    }
-
-    @Override
     public RoomDTO save(RoomDTO request) {
         Room entity;
 

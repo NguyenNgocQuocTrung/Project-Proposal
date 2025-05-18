@@ -19,15 +19,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class BookingdetailServiceImpl implements BookingdetailService {
     private final BookingdetailRepo bookingDetailRepo;
+
     private final BookingRepo bookingRepo;
 
     private final RoomRepo roomRepo;
+
     private final RoomMapper roomMapper;
 
     private final BookingdetailMapper bookingDetailMapper;
@@ -73,5 +76,27 @@ public class BookingdetailServiceImpl implements BookingdetailService {
             }
         }
         bookingDetailRepo.deleteAll(details);
+    }
+
+    public BookingdetailDTO findAllBookingdetailByBooking(String bookingCode){
+
+        List<BookingDetail> details = bookingDetailRepo.findAllByBookingCode(bookingCode);
+
+        List<BookingdetailDTO> listResult = new ArrayList<>();
+
+        for(BookingDetail detail : details){
+
+            BookingdetailDTO detailDto = bookingDetailMapper.toDTO(detail);
+
+            RoomDTO roomDto = roomMapper.toDTO(detail.getRoom());
+
+            detailDto.setRoomDTO(roomDto);
+
+            listResult.add(detailDto);
+        }
+        BookingdetailDTO response = new BookingdetailDTO();
+        response.setListResult(listResult);
+
+        return response;
     }
 }
