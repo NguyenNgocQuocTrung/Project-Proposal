@@ -16,7 +16,7 @@ public interface BookingRepo extends JpaRepository<Booking, Long> {
     JOIN BookingDetail bd ON bd.booking.id = b.id
     JOIN Room r ON r.id = bd.room.id
     WHERE r.roomNo = :roomNo
-      AND r.status = 'BOOKED'
+      AND r.status = 'OCCUPIED'
       AND CURRENT_TIMESTAMP BETWEEN b.checkIn AND b.checkOut
     """)
     Optional<Booking> findByRoomNo(@Param("roomNo") int roomNo);
