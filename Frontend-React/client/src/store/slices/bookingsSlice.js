@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { mockBookings } from '@/lib/mockData';
+import { api } from '@/services/api';
 
 // Initial state
 const initialState = {
@@ -34,8 +35,6 @@ export const fetchBookings = createAsyncThunk(
   'bookings/fetchBookings',
   async (_, { rejectWithValue }) => {
     try {
-      // In a real application, this would be an API call
-      // For now, we'll load data from localStorage or use mock data
       return new Promise((resolve) => {
         setTimeout(() => {
           const bookings = loadBookingsFromStorage();
@@ -57,16 +56,16 @@ export const fetchBookingById = createAsyncThunk(
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           const { bookings } = getState().bookings;
-          
+
           // First check if we have the booking in our state
           let booking = bookings.find(b => b.id === bookingId);
-          
+
           // If not found in state, try to get it from localStorage
           if (!booking) {
             const storedBookings = loadBookingsFromStorage();
             booking = storedBookings.find(b => b.id === bookingId);
           }
-          
+
           if (booking) {
             resolve(booking);
           } else {
@@ -76,6 +75,18 @@ export const fetchBookingById = createAsyncThunk(
       });
     } catch (error) {
       return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const createBookingAsync = createAsyncThunk(
+  'bookings/createBooking',
+  async (bookingData, { rejectWithValue }) => {
+    try {
+      const response = await api.bookings.create(bookingData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to create booking');
     }
   }
 );
@@ -175,6 +186,19 @@ const bookingsSlice = createSlice({
       .addCase(fetchBookingById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch booking';
+      })
+      // Create booking cases
+      .addCase(createBookingAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createBookingAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.bookings.push(action.payload);
+      })
+      .addCase(createBookingAsync.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
