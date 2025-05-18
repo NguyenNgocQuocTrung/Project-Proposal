@@ -35,7 +35,6 @@ public class SercurityConfig {
     private static final String[] RECEPTIONIST_GET_ENDPOINTS = {
             "/room/available",
             "/payment/{bookingCode}/invoice-preview",
-            "/booking",
             "/vn-pay",
             "/vn-pay-callback",
             "/report",
@@ -55,7 +54,6 @@ public class SercurityConfig {
     };
 
     private static final String[] ADMIN_GET_ENDPOINTS ={
-            "/booking",
             "/feedback",
             "/report"
     };

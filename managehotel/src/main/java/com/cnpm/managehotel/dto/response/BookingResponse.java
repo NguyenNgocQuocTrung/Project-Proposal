@@ -20,4 +20,5 @@ public class BookingResponse extends AbstractDTO<BookingResponse> {
     int guestNum;
     Date checkIn;
     Date checkOut;
+    boolean isPaid;
 }

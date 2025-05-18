@@ -13,19 +13,18 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
 
     Optional<Room> findByRoomNo(int roomNo);
     List<Room> findByRoomNoIn(List<Integer> roomNo);
-    List<Room> findByStatus(String status);
 
     @Query("SELECT bd.room FROM BookingDetail bd WHERE bd.booking.bookingCode = :bookingCode")
     List<Room> findRoomsByBookingCode(@Param("bookingCode") String bookingCode);
 
     @Query("""
     SELECT r FROM Room r
-    r.status != 'MAINTAIN'
+    WHERE r.status != 'MAINTAIN'
     AND r.id NOT IN (
        SELECT bd.room.id
        FROM BookingDetail bd
        JOIN bd.booking b
-       WHERE FUNCTION('date', b.checkOut) > FUNCTION('date', :checkInDate)
+       WHERE FUNCTION('date', b.checkOut) >= FUNCTION('date', :checkInDate)
        AND FUNCTION('date', b.checkIn) < FUNCTION('date', :checkOutDate)
     )
     """)

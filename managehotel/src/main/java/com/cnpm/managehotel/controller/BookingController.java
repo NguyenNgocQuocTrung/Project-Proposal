@@ -1,5 +1,6 @@
 package com.cnpm.managehotel.controller;
 
+import com.cnpm.managehotel.dto.BookingdetailDTO;
 import com.cnpm.managehotel.dto.RoomDTO;
 import com.cnpm.managehotel.dto.request.BookingRequest;
 import com.cnpm.managehotel.dto.request.CheckinRequest;
@@ -10,6 +11,7 @@ import com.cnpm.managehotel.dto.response.CheckinResponse;
 import com.cnpm.managehotel.exception.AppException;
 import com.cnpm.managehotel.exception.ErrorCode;
 import com.cnpm.managehotel.service.BookingService;
+import com.cnpm.managehotel.service.BookingdetailService;
 import com.cnpm.managehotel.service.RoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class BookingController {
 
     private final BookingService bookingService;
-    private final RoomService roomService;
+    private final BookingdetailService bookingdetailService;
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse<Void>> handleAppException(AppException ex) {
@@ -106,11 +108,11 @@ public class BookingController {
             description = "Retrieve a list of rooms associated with the provided booking code"
     )
     @GetMapping("/{bookingCode}/detail")
-    public ApiResponse<RoomDTO> getRoomsByBookingCode(@PathVariable String bookingCode) {
+    public ApiResponse<BookingdetailDTO> getRoomsByBookingCode(@PathVariable String bookingCode) {
 
-        RoomDTO response = roomService.findAllRoomByBookingCode(bookingCode);
+        BookingdetailDTO response = bookingdetailService.findAllBookingdetailByBooking(bookingCode);
 
-        return ApiResponse.<RoomDTO>builder()
+        return ApiResponse.<BookingdetailDTO>builder()
                 .result(response)
                 .build();
     }

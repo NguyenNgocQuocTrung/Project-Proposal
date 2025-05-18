@@ -18,4 +18,5 @@ public class BookingdetailDTO extends AbstractDTO<BookingdetailDTO>{
     int unit;
     boolean isForeign;
     double extraFee;
+    RoomDTO roomDTO;
 }
