@@ -36,4 +36,6 @@ public interface RoomRepo extends JpaRepository<Room, Long> {
     int countTotalRooms();
 
     int countByStatus(String status);
+
+
 }

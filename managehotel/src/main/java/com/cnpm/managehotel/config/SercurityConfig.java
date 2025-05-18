@@ -38,7 +38,8 @@ public class SercurityConfig {
             "/booking",
             "/vn-pay",
             "/vn-pay-callback",
-            "/report"
+            "/report",
+            "/{bookingCode}/detail"
     };
 
     private static final String[] RECEPTIONIST_POST_ENDPOINTS = {
