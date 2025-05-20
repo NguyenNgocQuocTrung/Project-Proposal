@@ -54,4 +54,16 @@ public class ProductController {
                 .result(result)
                 .build();
     }
+
+    @GetMapping
+    @Operation(
+            summary = "Get all product",
+            description = "Get all prodcut in database"
+    )
+    public ApiResponse<ProductDTO> getAllProduct() {
+        ProductDTO result = productService.findAll();
+        return ApiResponse.<ProductDTO>builder()
+                .result(result)
+                .build();
+    }
 }

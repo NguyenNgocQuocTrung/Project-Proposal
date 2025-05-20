@@ -9,10 +9,12 @@ public interface BookingdetailMapper {
 
     @Mapping(source = "bookingId", target = "booking.id")
     @Mapping(source = "roomId", target = "room.id")
+    @Mapping(source = "foreign", target = "foreign")
     BookingDetail toEntity(BookingdetailDTO dto);
 
     @Mapping(source = "booking.id", target = "bookingId")
     @Mapping(source = "room.id", target = "roomId")
+    @Mapping(source = "foreign", target = "foreign")
     BookingdetailDTO toDTO(BookingDetail entity);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

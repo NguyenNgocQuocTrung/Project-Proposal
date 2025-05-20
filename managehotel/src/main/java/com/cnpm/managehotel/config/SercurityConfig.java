@@ -83,6 +83,7 @@ public class SercurityConfig {
             throws Exception {
 
         httpSecurity
+                .securityMatcher(request -> !request.getRequestURI().startsWith("/api/v1/vn-pay-callback"))
                 .authorizeHttpRequests(authorize -> authorize
 //                        .requestMatchers(HttpMethod.GET, RECEPTIONIST_GET_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
 //                        .requestMatchers(HttpMethod.POST, RECEPTIONIST_POST_ENDPOINTS).hasRole(UserRole.RECEPTIONIST)
@@ -94,6 +95,7 @@ public class SercurityConfig {
 //                        .requestMatchers(HttpMethod.GET, COMMON_GET_ENDPOINTS).hasAnyRole(UserRole.ADMIN, UserRole.RECEPTIONIST)
                         .requestMatchers(HttpMethod.POST, "/feedback").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/feedback").permitAll()
+                        .requestMatchers("/api/v1/vn-pay-callback").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").anonymous()
                         .requestMatchers(HttpMethod.POST, "/auth/register").anonymous()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs*/**").permitAll()

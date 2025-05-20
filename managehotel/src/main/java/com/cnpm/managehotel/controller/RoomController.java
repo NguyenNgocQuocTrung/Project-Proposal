@@ -63,7 +63,7 @@ public class RoomController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("/occupied")
     @Operation(
             summary = "Get all rooms occupied",
             description = "Retrieves a list of all occupied rooms."

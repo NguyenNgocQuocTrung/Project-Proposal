@@ -12,6 +12,8 @@ import com.cnpm.managehotel.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -42,4 +44,16 @@ public class ProductServiceImpl implements ProductService {
 
         return productMapper.toDTO(saved);
     }
+
+    @Override
+    public ProductDTO findAll() {
+        List<Product> entities = productRepo.findAll();
+        List<ProductDTO> dtos = productMapper.toDTOList(entities);
+        ProductDTO response = new ProductDTO();
+
+        response.setListResult(dtos);
+        return response;
+    }
+
+
 }

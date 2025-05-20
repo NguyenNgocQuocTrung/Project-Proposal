@@ -20,7 +20,7 @@ public class BookingDetail {
     int unit;
 
     @Column(name = "is_foreign")
-    boolean isForeign;
+    boolean foreign;
 
     @Column(name = "extra_fee")
     double extraFee;

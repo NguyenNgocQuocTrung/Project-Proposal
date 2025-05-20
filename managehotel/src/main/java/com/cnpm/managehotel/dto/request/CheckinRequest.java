@@ -1,5 +1,6 @@
 package com.cnpm.managehotel.dto.request;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class CheckinRequest {
     String bookingCode;
     int roomNo;
-    boolean isForeign;
+    boolean foreign;
     boolean extraFree;
 }

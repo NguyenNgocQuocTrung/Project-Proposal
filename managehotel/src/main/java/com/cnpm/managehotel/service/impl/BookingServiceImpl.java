@@ -161,11 +161,11 @@ public class BookingServiceImpl implements BookingService {
 
         BookingDetail detail = bookingdetailRepo.findByBookingIdAndRoomId(booking.getId(), room.getId());
 
-        if(!request.isForeign()){
+        if(request.isForeign()){
             detail.setForeign(true);
         }
 
-        if(!request.isExtraFree()){
+        if(request.isExtraFree()){
             detail.setExtraFee(0.25);
         }
 

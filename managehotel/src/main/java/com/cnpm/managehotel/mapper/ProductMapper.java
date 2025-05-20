@@ -11,6 +11,7 @@ public interface ProductMapper {
 
     @Mappings({
             @Mapping(source = "category.id", target = "categoryId"),
+            @Mapping(source = "category.name", target = "categoryName"),
             @Mapping(source = "id", target = "id")
     })
     ProductDTO toDTO(Product product);
@@ -19,8 +20,14 @@ public interface ProductMapper {
     @Mapping(target = "category", ignore = true)
     Product toEntity(ProductDTO dto);
 
+    @Mapping(target = "category", ignore = true)
     List<ProductDTO> toDTOList(List<Product> products);
 
+    @Mappings({
+            @Mapping(source = "category.id", target = "categoryId"),
+            @Mapping(source = "category.name", target = "categoryName"),
+            @Mapping(source = "id", target = "id")
+    })
     List<Product> toEntityList(List<ProductDTO> dtos);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

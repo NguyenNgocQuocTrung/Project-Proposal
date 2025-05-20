@@ -17,4 +17,5 @@ public class ProductDTO extends AbstractDTO<ProductDTO>{
     double price;
     int amount;
     Long categoryId;
+    String categoryName;
 }
